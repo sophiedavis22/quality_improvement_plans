@@ -12,20 +12,31 @@ null_values <- c(NA, "-", "- ", "NA", "NA ", "N/A", "N/A ", "na", "na ", "n/a", 
 path <- "//NDATA9/daviss1$/My Documents/Completed QIPs/UPDATED_Quality_Improvement_Plan_BPI.xlsx"
 tab_list <- excel_sheets(path = path)
 
-tab_list[!(tab_list %in% c("Contents", "Foreword by Sarah Henry", "Background", "Instructions", "Key Metrics", "BLANK Quality Risk", "Progress Check", "EXAMPLE Quality Risk"))]
+risks <- tab_list[!(tab_list %in% c("Contents", "Foreword by Sarah Henry", "Background", "Instructions", "Key Metrics", "BLANK Quality Risk", "Progress Check", "EXAMPLE Quality Risk"))]
 
-
-n_risk <- 2
+n_risk <- length(risks)
 
 quality_risk_list <- list(NULL)
 
 for (i in 1:n_risk) {
   quality_risk_list[[i]] <- readxl::read_xlsx("//NDATA9/daviss1$/My Documents/Completed QIPs/UPDATED_Quality_Improvement_Plan_BPI.xlsx", sheet = paste0("Quality Risk ",i) , range = "B5:C10", na=null_values)
-  assign(paste0("quality_dimension_",i), quality_risk_list[[i]])
 }
 
+quality_dimensions_names <- c(quality_risk_list[[1]][1])
+dimensions <- lapply(quality_risk_list, '[[',2)
+table <- do.call("cbind", dimensions, quote = TRUE)
+table <- as.data.frame(table)
 
-quality_dimensions_table <- rbindlist(quality_risk_list, use.names=TRUE, fill=FALSE)
+rownames(table) <- quality_dimensions_names
+
+
+
+
+
+table_2 <- dplyr::bind_cols(quality_risk_list, .id = "Quality Dimension")
+
+
+quality_dimensions_table <- cbind(quality_risk_list, use.names=TRUE, fill=FALSE)
 
 quality_dimensions_table$frequency <- rowSums(!is.na(quality_dimensions_table[-1]))
 

@@ -18,18 +18,18 @@ file_details_division <- as.data.frame(file)
 # Trim file name to add division name
 file_details_division$division_name <- str_replace_all(file_details_division$file, c("//NDATA9/daviss1\\$/My Documents/Completed QIPs/UPDATED_Quality_Improvement_Plan_"="", ".xlsx"=""))
 file_details_division
-
+n_division <- nrow(file_details_division)
 # Create empty list to store quality dimensions for each division in dfs
 divisional_quality_dimensions <- list(NULL)
 # Create empty matrix for total number of QRs for each division with division name
-n_risks_division <- data.frame(matrix(nrow=nrow(file_details_division), ncol=2))
+n_risks_division <- data.frame(matrix(nrow=n_division, ncol=2))
 colnames(n_risks_division) <- c("division", "n_risks")
 
 
 # Loop to extract dimension tables from each division (each file)
 # i files
 # j QRs (tabs)
-for (i in 1:nrow(file_details_division)) {
+for (i in 1:n_division) {
   print(i)
   
   # Select i-th file path and extract list of tabs, drawing out only those with QR data
@@ -90,10 +90,81 @@ all_divisions
 
 
 
+key_metrics <- data.frame(matrix(nrow=4, ncol=2))
+file_template <- "//NDATA9/daviss1$/My Documents/Completed QIPs/UPDATED_Quality_Improvement_Plan_division_name.xlsx"
+
+#Import as one and remove NA rows?
+key_metrics[1,] <- readxl::read_xlsx(file_template, sheet = "Key Metrics" , range = "A4:B4", col_names = FALSE, na = null_values)
+key_metrics[2,] <- readxl::read_xlsx(file_template, sheet = "Key Metrics" , range = "A10:B10", col_names = FALSE, na = null_values)
+key_metrics[3,] <- readxl::read_xlsx(file_template, sheet = "Key Metrics" , range = "A17:B17", col_names = FALSE, na = null_values)
+key_metrics[4,] <- readxl::read_xlsx(file_template, sheet = "Key Metrics" , range = "A24:B24", col_names = FALSE, na = null_values)
+
+colnames(key_metrics) <- c("id", "question")
 
 
 
-key_metrics_m1 <- readxl::read_xlsx("//NDATA9/daviss1$/My Documents/Completed QIPs/UPDATED_Quality_Improvement_Plan_BPI.xlsx", sheet = "Key Metrics" , range = "B4:P8")
+
+# Need to extract division name
+#outside loop
+key_metrics_all_divisions <- list(NULL)
+
+#inside loop
+key_metrics_division_list <- list(NULL)
+
+key_metrics_division_list[[1]] <- t(readxl::read_xlsx("//NDATA9/daviss1$/My Documents/Completed QIPs/UPDATED_Quality_Improvement_Plan_BPI.xlsx", sheet = "Key Metrics" , range = "B4:P8", col_names = FALSE, na = null_values))
+key_metrics_division_list[[2]] <- t(readxl::read_xlsx("//NDATA9/daviss1$/My Documents/Completed QIPs/UPDATED_Quality_Improvement_Plan_BPI.xlsx", sheet = "Key Metrics" , range = "B10:P14", col_names = FALSE, na = null_values))
+key_metrics_division_list[[3]] <- t(readxl::read_xlsx("//NDATA9/daviss1$/My Documents/Completed QIPs/UPDATED_Quality_Improvement_Plan_BPI.xlsx", sheet = "Key Metrics" , range = "B17:P21", col_names = FALSE, na = null_values))
+key_metrics_division_list[[4]] <- t(readxl::read_xlsx("//NDATA9/daviss1$/My Documents/Completed QIPs/UPDATED_Quality_Improvement_Plan_BPI.xlsx", sheet = "Key Metrics" , range = "B24:P28", col_names = FALSE, na = null_values))
+
+key_metrics_division_list[[1]][1,1]
+
+# have an if statement for Q matching
+for (i in 1:4) {
+  print(i)
+  if (key_metrics_division_list[[i]][1,1]!=key_metrics[i,2]) {
+    stop("Question does not match")
+  } else {
+    print("Question matches")
+  }
+}
+
+
+
+
+
+key_metrics_division_table <- data.frame(matrix(nrow=14, ncol=2))
+key_metrics_division_table[,2] <- key_metrics_division_list[[1]][2:15,3]
+colnames(key_metrics_division_table) <- c("division_name", "month")
+rownames(key_metrics_division_table) <- NULL
+
+for (i in 1:4) {
+  metric <- key_metrics_division_list[[i]][2:15,4:5]
+  colnames(metric) <- c(paste0("m",i), paste0("details_",i))
+  rownames(metric) <- NULL
+  key_metrics_division_table <- cbind(key_metrics_division_table, metric)
+  print(key_metrics_division_table)
+}
+
+
+key_metric_responses <- lapply(key_metrics_division, '[[',3)
+key_metric_responses
+
+
+key_metrics_division[[1]][1,1]==key_metrics[1,2]
+key_metrics_table_names
+
+tkm1 <- t(key_metrics_m1)
+
+header.true <- function(df) {
+  names(df) <- as.character(unlist(df[1,]))
+  df[-1,]
+}
+
+tkm1 <- header.true(tkm1)
+colnames(tkm1) #<- 
+
+
+
 key_metrics_m2 <- readxl::read_xlsx("//NDATA9/daviss1$/My Documents/Completed QIPs/UPDATED_Quality_Improvement_Plan_BPI.xlsx", sheet = "Key Metrics" , range = "B10:P14")
 key_metrics_m3 <- readxl::read_xlsx("//NDATA9/daviss1$/My Documents/Completed QIPs/UPDATED_Quality_Improvement_Plan_BPI.xlsx", sheet = "Key Metrics" , range = "B17:P21")
 key_metrics_m4 <- readxl::read_xlsx("//NDATA9/daviss1$/My Documents/Completed QIPs/UPDATED_Quality_Improvement_Plan_BPI.xlsx", sheet = "Key Metrics" , range = "B24:P28")

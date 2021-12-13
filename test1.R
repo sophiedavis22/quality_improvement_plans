@@ -13,6 +13,14 @@ null_values <- c(NA, "-", "- ", "NA", "NA ", "N/A", "N/A ", "na", "na ", "n/a", 
 
 # Import list of files names in QIP folder
 file <- list.files(path="//NDATA9/daviss1$/My Documents/QIP work/Completed QIPs/", pattern="*.xlsx", full.names=TRUE, recursive=FALSE)
+
+file_path <- file[[1]]
+tab_list <- excel_sheets(path = file_path)
+risk_tabs <- tab_list[!(tab_list %in% c("Contents", "Foreword by Sarah Henry", "Background", "Instructions", "Key Metrics", "BLANK Quality Risk", "Progress Check", "EXAMPLE Quality Risk"))]
+quality_risk_list <- list(NULL)
+
+
+
 file_details_division <- as.data.frame(file)
 
 # Trim file name to add division name
@@ -33,41 +41,41 @@ colnames(n_risks_division) <- c("division", "n_risks")
 # j QRs (tabs)
 for (i in 1:n_division) {
   print(i)
-  
+
   # Select i-th file path and extract list of tabs, drawing out only those with QR data
   path <- file_details_division$file[i]
   tab_list <- excel_sheets(path = path)
   risks <- tab_list[!(tab_list %in% c("Contents", "Foreword by Sarah Henry", "Background", "Instructions", "Key Metrics", "BLANK Quality Risk", "Progress Check", "EXAMPLE Quality Risk"))]
   n_risk <- length(risks)
-  
+
   # Recording the division name and number of risks in empty matrix
   n_risks_division[i,1] <- file_details_division$division_name[i]
   n_risks_division[i,2] <- n_risk
-  
-  
+
+
   # Create empty list within loop to temporarily store QRs for that division
   quality_risk_list <- list(NULL)
-  
+
   # For j-th risk, read table from excel
   for (j in 1:n_risk) {
     quality_risk_list[[j]] <- readxl::read_xlsx(path, sheet = risks[j] , range = "B5:C10", na=null_values)
   }
-  
+
   # Extract responses from each QR
   dimensions_responses <- lapply(quality_risk_list, '[[',2)
-  
+
   # Bind all columns together into one df
   quality_dimensions_table <- as.data.frame(dimensions_responses)
-  
+
   # Extract dimension names to set row names and create column names
   quality_dimensions_names <- unlist(quality_risk_list[[1]][1])
   rownames(quality_dimensions_table) <- quality_dimensions_names
   colnames(quality_dimensions_table) <- paste0("qr_", 1:n_risk)
-  
+
   # Sum rows to give totals for each dimension, reorder so this column is first
   quality_dimensions_table$frequency <- rowSums(!is.na(quality_dimensions_table))
   quality_dimensions_table <- quality_dimensions_table[,c(n_risk+1, 1:n_risk)]
-  
+
   # Save divisional table to empty list and rename list with division name
   divisional_quality_dimensions[[i]] <- quality_dimensions_table
   names(divisional_quality_dimensions)[i] <- file_details_division$division_name[i]
@@ -128,15 +136,15 @@ colnames(n_months_division) <- c("division", "n_months")
 for (i in 1:n_division) {
   print(i)
   key_metrics_division_list <- list(NULL)
-  
+
   # Select i-th file path and extract list of tabs, drawing out only those with QR data
   path <- file_details_division$file[i]
-  
+
   key_metrics_division_list[[1]] <- t(readxl::read_xlsx(path = path, sheet = "Key Metrics" , range = "B4:P8", col_names = FALSE, na = null_values))
   key_metrics_division_list[[2]] <- t(readxl::read_xlsx(path = path, sheet = "Key Metrics" , range = "B10:P14", col_names = FALSE, na = null_values))
   key_metrics_division_list[[3]] <- t(readxl::read_xlsx(path = path, sheet = "Key Metrics" , range = "B17:P21", col_names = FALSE, na = null_values))
   key_metrics_division_list[[4]] <- t(readxl::read_xlsx(path = path, sheet = "Key Metrics" , range = "B24:P28", col_names = FALSE, na = null_values))
-  
+
 
   # have an if statement for Q matching
   for (j in 1:4) {
@@ -153,14 +161,14 @@ for (i in 1:n_division) {
   key_metrics_division_table[,1] <- file_details_division$division_name[i]
   colnames(key_metrics_division_table) <- c("division_name", "month")
   rownames(key_metrics_division_table) <- NULL
-  
+
   for (k in 1:4) {
     metric <- key_metrics_division_list[[k]][2:15,4:5]
     colnames(metric) <- c(paste0("m",k), paste0("details_",k))
     rownames(metric) <- NULL
     key_metrics_division_table <- cbind(key_metrics_division_table, metric)
   }
-  
+
   for (l in 1:nrow(key_metrics_division_table)) {
     print(l)
     if (all(is.na(key_metrics_division_table[l,3:10]))) {
@@ -171,17 +179,17 @@ for (i in 1:n_division) {
       key_metrics_division_table[l,2] <- key_metrics_division_table[l,2]
     }
   }
-  
+
   key_metrics_division_table_final <- key_metrics_division_table[rowSums(is.na(key_metrics_division_table))!=ncol(key_metrics_division_table),]
   names <- c("m1" ,"m2", "m3", "m4")
   key_metrics_division_table_final[,names] <- lapply(key_metrics_division_table_final[,names] , as.numeric)
-  
+
   n_months <- nrow(key_metrics_division_table_final)
-  
+
   # Recording the division name and number of risks in empty matrix
   n_months_division[i,1] <- file_details_division$division_name[i]
   n_months_division[i,2] <- n_months
-  
+
   key_metrics_all_divisions[[i]] <- key_metrics_division_table_final
 }
 
@@ -205,8 +213,8 @@ rownames(output_key_metrics_final) <- NULL
 key_metrics_present <- data.frame(question=paste(key_metrics_ref$q_id, key_metrics_ref$question),
                                   previous_month=t(output_key_metrics_final[nrow(output_key_metrics_final)-1,2:5]),
                                   latest_month=t(output_key_metrics_final[nrow(output_key_metrics_final),2:5]))
-colnames(key_metrics_present) <- c("Question", 
-                                   paste0("Previous month (",output_key_metrics_final[nrow(output_key_metrics_final)-1,1], ")"), 
+colnames(key_metrics_present) <- c("Question",
+                                   paste0("Previous month (",output_key_metrics_final[nrow(output_key_metrics_final)-1,1], ")"),
                                    paste0("Latest month (", output_key_metrics_final[nrow(output_key_metrics_final),1], ")"))
 rownames(key_metrics_present) <- NULL
 

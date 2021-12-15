@@ -6,8 +6,9 @@
 #'
 #' @return list of variables
 
+# Should just be "config.yaml"
 
 read_config <- function(config_file) {
-  config <- yaml::read_yaml("config.yaml")
+  config <- yaml::read_yaml("D:/Repos/quality_improvement_plans/config.yaml")
   return(config)
 }

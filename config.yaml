@@ -1,1 +1,14 @@
 directory: "//NDATA9/daviss1$/My Documents/QIP work/Completed QIPs"
+
+null_values:
+  - NA
+  - "-"
+  - "- "
+  - "NA"
+  - "NA "
+  - "N/A"
+  - "N/A "
+  - "na"
+  - "na "
+  - "n/a"
+  - "n/a "

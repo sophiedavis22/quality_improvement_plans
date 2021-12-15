@@ -14,12 +14,6 @@ null_values <- c(NA, "-", "- ", "NA", "NA ", "N/A", "N/A ", "na", "na ", "n/a", 
 # Import list of files names in QIP folder
 file <- list.files(path="//NDATA9/daviss1$/My Documents/QIP work/Completed QIPs/", pattern="*.xlsx", full.names=TRUE, recursive=FALSE)
 
-file_path <- file[[1]]
-tab_list <- excel_sheets(path = file_path)
-risk_tabs <- tab_list[!(tab_list %in% c("Contents", "Foreword by Sarah Henry", "Background", "Instructions", "Key Metrics", "BLANK Quality Risk", "Progress Check", "EXAMPLE Quality Risk"))]
-quality_risk_list <- list(NULL)
-
-
 
 file_details_division <- as.data.frame(file)
 
@@ -94,6 +88,9 @@ rownames(all_divisions) <- quality_dimensions_names
 all_divisions$total <- rowSums(all_divisions)
 all_divisions$pct <- paste0(round(all_divisions$total/total_n_risks*100,2),"%")
 all_divisions
+
+
+
 
 
 

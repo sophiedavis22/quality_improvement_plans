@@ -5,8 +5,12 @@ source("R/utilities.R")
 source("R/quality_risks.R")
 qip_config <- read_config()
 
-null_values <- c(NA, "-", "- ", "NA", "NA ", "N/A", "N/A ", "na", "na ", "n/a", "n/a ")
-file_path_list <- list.files(path=qip_config$directory, pattern="*.xlsx", full.names=TRUE, recursive=FALSE)
-risks <- extract_all_division_risks(file_path_list)
-out <- create_all_division_risk_tables(risks)
-all_risks <- merge_all_division_risks(out)
+file_path_list <- get_file_path_list()
+file_path_list
+all_division_names <- get_division_name_list(file_path_list)
+all_division_names
+
+all_divisions_risks_sep <- get_sep_risks_all_div(file_path_list, all_division_names)
+all_divisions_risks_merged <- get_merged_risks_all_div(all_divisions_risks_sep, all_division_names)
+
+final_table <- get_final_risk_dimension_table(all_divisions_risks_merged)

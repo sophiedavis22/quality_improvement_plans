@@ -2,69 +2,93 @@
 #'
 #' @description Function to extract Quality Risk tables from multiple excel tabs in one divisional file
 #'
-#' @param file_path File path for divisional QIP
-#' @param risk_tabs Tab names for quality risks
+#' @param file_path File path for single division
+#' @param risk_tabs Tab names for division
 #'
-#' @return List of tables
+#' @return List of tables (output table for each risk)
 
-extract_single_division_risks <- function(file_path, risk_tabs){
+extract_risks_from_tabs <- function(file_path, risk_tabs){
+  config_file <- read_config()
   lapply(risk_tabs, function(x){
-    quality_risk_list <- readxl::read_xlsx(file_path, sheet = x , range = "B5:C10", na=null_values)
+    quality_risk_list <- readxl::read_xlsx(file_path, sheet = x , range = "B5:C10", na=config_file$null_values)
     return(quality_risk_list)
     })
 }
 
 
-#' @title Extract tab names and Quality Risks for multiple divisions
-#'
-#' @description Function to extract tab names (for each Quality Risk) for multiple divisions and extract Quality Risk tables
-#'
-#' @param file_path File path for all QIP folder
-#'
-#' @return List of tables
 
-extract_all_division_risks <- function(file_path){
+
+
+#' @title Extract Quality Risks for all divisions
+#'
+#' @description Function to extract tab names (for each division) and extract Quality Risk tables for all divisions
+#'
+#' @param file_path List of file paths
+#'
+#' @return List of tables (list by division, sub-lists by risk)
+
+extract_risks_all_div <- function(file_path){
   lapply(file_path, function(x){
     tab_list <- excel_sheets(path = x)
     risk_tabs <- tab_list[!(tab_list %in% c("Contents", "Foreword by Sarah Henry", "Background", "Instructions", "Key Metrics", "BLANK Quality Risk", "Progress Check", "EXAMPLE Quality Risk"))]
-    quality_risk_list <- extract_single_division_risks(x, risk_tabs)
-    return(quality_risk_list)
+    all_div_risk_list <- extract_risks_from_tabs(x, risk_tabs)
+    return(all_div_risk_list)
   })
 }
 
 
 
+## can I build this into the function above rather than being separate?
 
 
-
-#' @title Sum risks to dimensions per division
+#' @title Extract Quality Risks for all divisions (with named list!)
 #'
-#' @description Function to sum rows containing entries for each division, to get number of risks to quality for each dimension
+#' @description Function to extract tab names (for each division), extract Quality Risk tables for all divisions and name list elements
 #'
-#' @param division_risk_table Collated risk table for single division
+#' @param file_path List of file paths
+#' @param division_names  Names as values
 #'
-#' @return Table with added frequency column
+#' @return List of tables
 
-sum_risks <- function(division_risk_table){
-  division_risk_table$frequency <- rowSums(!is.na(division_risk_table[-1]))
-  return(division_risk_table)
+get_sep_risks_all_div <- function(file_path, division_names) {
+  all_div_sep_risk_list <- extract_risks_all_div(file_path)
+  all_div_sep_risk_list_named <- assign_division_names(all_div_sep_risk_list, division_names)
+  return(all_div_sep_risk_list_named)
 }
 
 
 
 
-#' @title Collate risks for single division
+
+#' @title Sum over non-empty rows
 #'
-#' @description Function to merge all risks for each division into one table, with number of each
+#' @description Function to sum non-empty cells in rows (excluding first row as row name)
 #'
-#' @param quality_risk_list List of divisional risks containing sub lists
+#' @param table Table with character entries
+#'
+#' @return Table with added frequency column
+
+sum_risks <- function(table){
+  table$frequency <- rowSums(!is.na(table[-1]))
+  return(table)
+}
+
+
+
+
+
+#' @title Collate Quality Risks for single division
+#'
+#' @description Function to merge all Quality Risks for each division into one table, with row sums for number of risks affecting each dimension
+#'
+#' @param all_div_sep_risk_list_named List of Quality divisions for single division
 #' @param division_order Numeric vector from 1 to number of divisions
 #'
-#' @return Tidied table with total column
+#' @return Table with total column
 
 ##MAKE DATA FRAME AND REMOVE DUPLICATES
-create_single_division_risk_table <- function(quality_risk_list, division_order){
-  division_risk_table <- data.frame(quality_risk_list[[division_order]])
+merge_single_div_risks <- function(all_div_sep_risk_list_named, division_order){
+  division_risk_table <- data.frame(all_div_sep_risk_list_named[[division_order]])
   division_risk_table <- division_risk_table[!duplicated(as.list(division_risk_table))]
   division_risk_table <- sum_risks(division_risk_table)
 
@@ -79,53 +103,135 @@ create_single_division_risk_table <- function(quality_risk_list, division_order)
 #'
 #' @description Function to produce table of risks for each division, with totals for risk to each dimension
 #'
-#' @param quality_risk_list List of divisional risks containing sub lists
+#' @param all_div_sep_risk_list_named List of divisional risks containing sub lists
 #'
-#' @return List of tables
+#' @return List of tables (not named)
 
-create_all_division_risk_tables <- function(quality_risk_list){
-  lapply(1:length(quality_risk_list), function(x){
-    each_division_risk_table_list <- create_single_division_risk_table(quality_risk_list, x)
-    return(each_division_risk_table_list)
+merge_all_div_risks <- function(all_div_sep_risk_list_named){
+  lapply(1:length(all_div_sep_risk_list_named), function(x){
+    each_div_risk_table <- merge_single_div_risks(all_div_sep_risk_list_named, x)
+    return(each_div_risk_table)
     })
   }
 
 
+## can I build this into the function above rather than being separate?
 
 
-
-
-#' @title Sum risks to dimensions across divisions
+#' @title Collate risks in tables for each division (list elements names)
 #'
-#' @description Function to sum risks to each quality dimension - give ONS total
+#' @description Function to produce table of risks for each division, with totals for risk to each dimension and named list elements
 #'
-#' @param all_division_risk_table List of Collated risk table for single division
+#' @param all_div_sep_risk_list_named List by division, sub-list by risk
+#' @param division_names Names as values
 #'
-#' @return Table with added frequency column
+#' @return List of tables (named)
 
-sum_no_risks <- function(all_division_risk_table){
-  all_division_risk_table$frequency <- rowSums(all_division_risk_table[-1])
-  return(all_division_risk_table)
+get_merged_risks_all_div <- function(all_div_sep_risk_list_named, division_names) {
+  all_div_risks_merged <- merge_all_div_risks(all_div_sep_risk_list_named)
+  all_div_risks_merged <- assign_division_names(all_div_risks_merged, division_names)
+  return(all_div_risks_merged)
 }
 
 
 
 
-#' @title Collate risks in tables for each division ####
+
+#' @title Sum over numerical rows
 #'
-#' @description Function to produce table of risks for each division, with totals for risk to each dimension ####
+#' @description Function to sum numerical cells in rows (excluding first row as row name)
 #'
-#' @param quality_risk_list List of divisional risks containing ####
+#' @param table Table with character and numeric entries
+#'
+#' @return Table with added total column
+
+sum_no_risks <- function(table){
+  table$total <- rowSums(table[-1])
+  return(table)
+}
+
+
+
+
+
+#' @title Create single division/dimension table - numbers only
+#'
+#' @description Function to create a single table with dimension breakdown by division, and sum for each dimension
+#'
+#' @param all_div_risks_merged List of merged risks by division
 #'
 #' @return Table of totals by division with added total column
 
-merge_all_division_risks <- function(each_division_risk_table_list){
-  all_division_risk_table <- data.frame(each_division_risk_table_list)
-  all_division_risk_table <- all_division_risk_table[!duplicated(as.list(all_division_risk_table))]
-  all_division_risk_table <- all_division_risk_table[,-grep("qr", colnames(all_division_risk_table))]
-  all_division_risk_table <- sum_no_risks(all_division_risk_table)
+create_all_div_dimension_table <- function(all_div_risks_merged){
+  all_div_dim_table <- data.frame(all_div_risks_merged)
+  all_div_dim_table <- all_div_dim_table[!duplicated(as.list(all_div_dim_table))]
+  all_div_dim_table <- all_div_dim_table[,-grep("qr", colnames(all_div_dim_table))]
+  all_div_dim_table <- sum_no_risks(all_div_dim_table)
 
-  #colnames(all_division_risk_table) <- c("dimension", paste0("qr_",1:(ncol(all_division_risk_table)-2)), "total")
-  return(all_division_risk_table)
+  colnames(all_div_dim_table) <- gsub(".total", "", colnames(all_div_dim_table))
+  colnames(all_div_dim_table)[1] <- "dimension"
+  return(all_div_dim_table)
 }
 
+
+
+
+
+#' @title Count number of quality risks per division
+#'
+#' @description Function to count number of quality risks in each division from list of risks by division
+#'
+#' @param all_div_risks_merged List of tables for each division with merged quality risks
+#'
+#' @return List with number of risks for each division
+
+extract_n_risk_division <- function(all_div_risks_merged){
+  lapply(all_div_risks_merged, function(x){
+    n_risk_division_list <- as.numeric(ncol(x)-2)
+    return(n_risk_division_list)
+  })
+}
+
+
+
+
+
+#' @title Number of Quality Risks by division in table
+#'
+#' @description Function to present number of quality risks in table from list of totals by division
+#'
+#' @param all_div_risks_merged List of tables for each division with merged quality risks
+#'
+#' @return Table
+
+create_all_div_risk_table <- function(all_div_risks_merged){
+  n_risk_division_list <- extract_n_risk_division(all_div_risks_merged)
+  n_risk_table <- data.frame(n_risk_division_list)
+  n_risk_table$dimension <- "No. quality risks"
+  n_risk_table <- n_risk_table[c(ncol(n_risk_table),1:(ncol(n_risk_table)-1))]
+  n_risk_table <- sum_no_risks(n_risk_table)
+  return(n_risk_table)
+}
+
+
+
+
+
+#' @title Table of Quality risks by division and dimension
+#'
+#' @description Function to produce table with all risks by dimension and division, with final % of Quality risks affecting each division
+#'
+#' @param all_div_risks_merg List of tables for each division with merged quality risks
+#'
+#' @return Table
+
+get_final_risk_dimension_table <- function(all_div_risks_merg){
+  table_by_dimension <- create_all_div_dimension_table(all_div_risks_merg)
+  table_by_risk <- create_all_div_risk_table(all_div_risks_merg)
+  total_n_risks <- table_by_risk$total
+
+  final_table <- rbind(table_by_dimension, table_by_risk)
+
+  final_table$pct <- as.percent(final_table$total/total_n_risks)
+  return(final_table)
+}

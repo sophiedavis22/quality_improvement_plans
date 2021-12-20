@@ -161,7 +161,7 @@ for (i in 1:n_division) {
 
   for (k in 1:4) {
     metric <- key_metrics_division_list[[k]][2:15,4:5]
-    colnames(metric) <- c(paste0("m",k), paste0("details_",k))
+    colnames(metric) <- c(paste0("m",k), paste0("details_m",k))
     rownames(metric) <- NULL
     key_metrics_division_table <- cbind(key_metrics_division_table, metric)
   }
@@ -190,7 +190,7 @@ for (i in 1:n_division) {
   key_metrics_all_divisions[[i]] <- key_metrics_division_table_final
 }
 
-
+View(key_metrics_division_list[[1]])
 View(key_metrics_all_divisions[[1]])
 
 
@@ -216,7 +216,7 @@ colnames(key_metrics_present) <- c("Question",
 rownames(key_metrics_present) <- NULL
 
 
-
+key_metrics_present
 
 
 

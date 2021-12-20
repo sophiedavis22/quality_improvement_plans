@@ -12,3 +12,17 @@ null_values:
   - "na "
   - "n/a"
   - "n/a "
+  - "N/a"
+  - "N/a "
+  - "none"
+  - "None"
+  - "NONE"
+  - "none "
+  - "None "
+  - "NONE "
+
+metric_ranges:
+  - "B4:P8"
+  - "B10:P14"
+  - "B17:P21"
+  - "B24:P28"

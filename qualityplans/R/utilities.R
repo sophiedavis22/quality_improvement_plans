@@ -55,6 +55,22 @@ get_division_name_list <- function(file_path_list) {
 }
 
 
+#' @title Extract single division name
+#'
+#' @description Function to extract division name (acronym) from file path
+#'
+#' @param file_path_list File paths
+#'
+#' @return Division name as values
+
+get_division_name <- function(file_path) {
+  config_file <- read_config()
+  alt_file_path <- gsub("$", "\\$", config_file$directory, fixed=TRUE)
+  division_name <- gsub(".xlsx", "", file_path)
+  division_name <- gsub(alt_file_path, "", division_name)
+  division_name <- gsub("/UPDATED_Quality_Improvement_Plan_", "", division_name)
+  return(division_name)
+}
 
 
 

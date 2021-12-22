@@ -26,3 +26,7 @@ metric_ranges:
   - "B10:P14"
   - "B17:P21"
   - "B24:P28"
+
+reporting_months:
+  this_month: "November 2021"
+  previous_month: NA

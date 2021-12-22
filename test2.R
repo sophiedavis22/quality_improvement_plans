@@ -22,15 +22,6 @@ dimension_risk_final_table <- get_final_risk_dimension_table(all_divisions_risks
 
 
 all_metric_list <- get_metric_tables_all(file_path_list, all_division_names)
-
-a <- all_metric_list[[2]]
-
-out.table <- get_all_merged_metric_tables(all_metric_list)
-
-
-file_path_1 <- file_path_list[1]
-
-metric_list_1 <- extract_metric_tables(file_path_1)
-metric_list_1[[1]]
-
-table <- data.frame(x = 1:4, y = c(5:7, NA), z = c(10:11, NA, NA))
+all_divisions_metrics_tables <- get_all_merged_metric_tables(all_metric_list)
+all_divisions_metrics <- combine_metrics_single_table(all_divisions_metrics_tables)
+metrics_table_final <- format_metric_table(all_divisions_metrics_tables)

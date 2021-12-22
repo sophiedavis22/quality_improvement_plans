@@ -197,7 +197,9 @@ View(key_metrics_all_divisions[[1]])
 
 
 key_metrics_all_divisions_table_with_details <- do.call(rbind, key_metrics_all_divisions)
-key_metrics_all_divisions_table <- subset(key_metrics_all_divisions_table_with_details, select=-c(details_1, details_2, details_3, details_4))
+
+
+key_metrics_all_divisions_table <- subset(key_metrics_all_divisions_table_with_details, select=-c(details_m1, details_m2, details_m3, details_m4))
 
 
 output_key_metrics <- aggregate(. ~month, key_metrics_all_divisions_table[,-1], sum)

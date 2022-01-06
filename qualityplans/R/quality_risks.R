@@ -166,15 +166,15 @@ create_all_div_dimension_table <- function(all_div_risks_merged){
   all_div_dim_table <- data.frame(all_div_risks_merged)
   all_div_dim_table <- all_div_dim_table[!duplicated(as.list(all_div_dim_table))]
   all_div_dim_table <- all_div_dim_table[,-grep("qr", colnames(all_div_dim_table))]
-  all_div_dim_table <- sum_no_risks(all_div_dim_table)
+  #all_div_dim_table <- sum_no_risks(all_div_dim_table)
 
-  colnames(all_div_dim_table) <- gsub(".total", "", colnames(all_div_dim_table))
-  colnames(all_div_dim_table)[1] <- "dimension"
+  #colnames(all_div_dim_table) <- gsub(".total", "", colnames(all_div_dim_table))
+  #colnames(all_div_dim_table)[1] <- "dimension"
   return(all_div_dim_table)
 }
 
 
-
+create_all_div_dimension_table(all_divisions_risks_merged)
 
 
 #' @title Count number of quality risks per division

@@ -19,8 +19,6 @@ dimension_risk_final_table <- get_final_risk_dimension_table(all_divisions_risks
 
 
 
-
-
 all_metric_list <- get_metric_tables_all(file_path_list, all_division_names)
 all_divisions_metrics_tables <- get_all_merged_metric_tables(all_metric_list)
 all_divisions_metrics <- combine_metrics_single_table(all_divisions_metrics_tables)

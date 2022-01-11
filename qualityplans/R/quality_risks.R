@@ -7,7 +7,7 @@
 #'
 #' @return List of tables (output table for each risk)
 
-extract_risks_from_tabs <- function(file_path, risk_tabs){
+extract_risks_from_tabs <- function(file_path, risk_tabs, config_file="D:/Repos/quality_improvement_plans/config.yaml"){
   config_file <- read_config()
   lapply(risk_tabs, function(x){
     quality_risk_list <- readxl::read_xlsx(file_path, sheet = x , range = "B5:C10", na=config_file$null_values)
@@ -173,8 +173,6 @@ create_all_div_dimension_table <- function(all_div_risks_merged){
   return(all_div_dim_table)
 }
 
-
-create_all_div_dimension_table(all_divisions_risks_merged)
 
 
 #' @title Count number of quality risks per division

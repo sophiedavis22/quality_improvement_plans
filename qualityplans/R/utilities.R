@@ -25,7 +25,7 @@ read_config <- function(config_file="D:/Repos/quality_improvement_plans/config.y
 #'
 #' @return List of file paths
 
-get_file_path_list <- function(config_file) {
+get_file_path_list <- function(config_file="D:/Repos/quality_improvement_plans/config.yaml") {
   config_file <- read_config()
   file_path_list <- list.files(path=config_file$directory, pattern="*.xlsx", full.names=TRUE, recursive=FALSE)
   file_path_list <- sort(file_path_list)
@@ -44,7 +44,7 @@ get_file_path_list <- function(config_file) {
 #'
 #' @return Division names as values
 
-get_division_name_list <- function(file_path_list) {
+get_division_name_list <- function(config_file="D:/Repos/quality_improvement_plans/config.yaml", file_path_list) {
   config_file <- read_config()
   alt_file_path <- gsub("$", "\\$", config_file$directory, fixed=TRUE)
   division_name <- gsub(".xlsx", "", file_path_list)

@@ -1,3 +1,4 @@
+devtools::install("qualityplans")
 library(readxl)
 library(tidyverse)
 
@@ -23,3 +24,10 @@ all_metric_list <- get_metric_tables_all(file_path_list, all_division_names)
 all_divisions_metrics_tables <- get_all_merged_metric_tables(all_metric_list)
 all_divisions_metrics <- combine_metrics_single_table(all_divisions_metrics_tables)
 metrics_table_final <- format_metric_table(all_divisions_metrics_tables)
+
+devtools::load("qualityplans")
+getwd()
+setwd("..")
+devtools::load_all("qualityplans")
+devtools::document("qualityplans")
+devtools::install("qualityplans")

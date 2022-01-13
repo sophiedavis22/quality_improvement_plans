@@ -1,8 +1,9 @@
-directory: "//NDATA9/daviss1$/My Documents/QIP work/Completed QIPs"
+directory: "data"
 
-file_prefix: "/UPDATED_Quality_Improvement_Plan_"
+file_prefix: "/test_"
 
 null_values:
+  - "test"
   - NA
   - "-"
   - "- "
@@ -22,19 +23,11 @@ null_values:
   - "none "
   - "None "
   - "NONE "
-  - " "
 
 dimension_range: "B5:C10"
 
 non_risk_tab_names: 
-  - "Contents"
-  - "Foreword by Sarah Henry"
-  - "Background"
-  - "Instructions"
-  - "Key Metrics"
-  - "BLANK Quality Risk"
-  - "Progress Check"
-  - "EXAMPLE Quality Risk"
+  - "Not Quality Risk"
 
 metric_ranges:
   - "B4:P8"
@@ -43,5 +36,5 @@ metric_ranges:
   - "B24:P28"
 
 reporting_months:
-  this_month: "November 2021"
+  this_month: "Test Month"
   previous_month: NA

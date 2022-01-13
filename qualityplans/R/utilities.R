@@ -1,12 +1,10 @@
-#' @title Reading in QIP config
+#' @title Reading in config file
 #'
 #' @description Function to read in configs of the QIPs, including directory and null_values
 #'
-#' @param config_file Yaml file containing config, with default setting
+#' @param config_file .yaml file containing config, with default settings (data directory, null values, metric ranges etc)
 #'
 #' @return List of variables
-
-# Should just be "config.yaml"
 
 read_config <- function(config_file="D:/Repos/quality_improvement_plans/config.yaml") {
   config <- yaml::read_yaml(config_file)
@@ -15,24 +13,20 @@ read_config <- function(config_file="D:/Repos/quality_improvement_plans/config.y
 
 
 
-
-
-#' @title Extract file list
+#' @title Extract file names and locations
 #'
 #' @description Function to extract list of file paths from folder with QIPs, sorted alphabetically
 #'
-#' @param config_file Yaml file containing config
+#' @param config_file .yaml file containing config, with default settings (data directory, null values, metric ranges etc)
 #'
-#' @return List of file paths
+#' @return All file paths as character vector (alphabetical)
 
-get_file_path_list <- function(config_file="D:/Repos/quality_improvement_plans/config.yaml") {
-  config_file <- read_config()
-  file_path_list <- list.files(path=config_file$directory, pattern="*.xlsx", full.names=TRUE, recursive=FALSE)
-  file_path_list <- sort(file_path_list)
-  return(file_path_list)
+get_file_paths <- function(config_file="D:/Repos/quality_improvement_plans/config.yaml") {
+  config <- read_config(config_file)
+  file_paths <- list.files(path=config$directory, pattern="*.xlsx", full.names=TRUE, recursive=FALSE)
+  file_paths <- sort(file_paths)
+  return(file_paths)
 }
-
-
 
 
 
@@ -40,66 +34,75 @@ get_file_path_list <- function(config_file="D:/Repos/quality_improvement_plans/c
 #'
 #' @description Function to extract division names (acronyms) from file paths
 #'
-#' @param file_path_list List of file paths
+#' @param file_paths List of file paths as character vector
+#' @param config_file .yaml file containing config, with default settings (data directory, null values, metric ranges etc)
 #'
-#' @return Division names as values
+#' @return All division names as character vector
 
-get_division_name_list <- function(config_file="D:/Repos/quality_improvement_plans/config.yaml", file_path_list) {
-  config_file <- read_config()
-  alt_file_path <- gsub("$", "\\$", config_file$directory, fixed=TRUE)
-  division_name <- gsub(".xlsx", "", file_path_list)
-  division_name <- gsub(alt_file_path, "", division_name)
-  division_name <- gsub("/UPDATED_Quality_Improvement_Plan_", "", division_name)
-  division_name <- sort(division_name)
-  return(division_name)
+get_division_names <- function(file_paths, config_file="D:/Repos/quality_improvement_plans/config.yaml") {
+  config <- read_config(config_file)
+  alt_file_path <- gsub("$", "\\$", config$directory, fixed=TRUE)
+  division_names <- gsub(".xlsx", "", file_paths)
+  division_names <- gsub(alt_file_path, "", division_names)
+  division_names <- gsub(config$file_prefix, "", division_names)
+  division_names <- sort(division_names)
+  return(division_names)
 }
 
 
-#' @title Extract single division name
+
+#' @title Extract (single) division name
 #'
 #' @description Function to extract division name (acronym) from file path
 #'
-#' @param file_path_list File paths
+#' @param file_paths File path as character
+#' @param config_file .yaml file containing config, with default settings (data directory, null values, metir ranges and reporting months)
 #'
-#' @return Division name as values
+#' @return Division name as character
 
-get_division_name <- function(file_path) {
-  config_file <- read_config()
-  alt_file_path <- gsub("$", "\\$", config_file$directory, fixed=TRUE)
-  division_name <- gsub(".xlsx", "", file_path)
-  division_name <- gsub(alt_file_path, "", division_name)
-  division_name <- gsub("/UPDATED_Quality_Improvement_Plan_", "", division_name)
-  return(division_name)
-}
+#get_division_name <- function(file_path, config_file="D:/Repos/quality_improvement_plans/config.yaml") {
+#  config_file <- read_config()
+#  alt_file_path <- gsub("$", "\\$", config_file$directory, fixed=TRUE)
+#  division_name <- gsub(".xlsx", "", file_path)
+#  division_name <- gsub(alt_file_path, "", division_name)
+#  division_name <- gsub(config$file_prefix, "", division_name)
+#  return(division_name)
+#}
 
 
 
-#' @title Assign names to list elements
+#' @title Assign new names to list elements
 #'
 #' @description Function to name elements of list
 #'
 #' @param list Any list
-#' @param new_names Names as values
+#' @param new_names Names as character vector of same length as list
 #'
 #' @return List named elements
 
-assign_division_names <- function(list, new_names){
-  names(list) <- new_names
-  return(list)
+assign_list_names <- function(list, new_names){
+  if(length(list)==length(new_names)) {
+    names(list) <- new_names
+    return(list)
+  } else {
+    stop("List and proposed new names are different lengths")
+  }
 }
 
 
 
-
-
-#' @title Convert number to percentage
+#' @title Convert value to percentage
 #'
-#' @description Function to convert input number to percentage format
+#' @description Function to convert input value to percentage format
 #'
-#' @param number Numeric variable
+#' @param value Numeric variable
 #'
 #' @return Percentage as character
 
-as.percent <- function(number, digits = 1, format = "f", ...) {      # Create user-defined function
-  paste0(formatC(number * 100, format = format, digits = digits, ...), "%")
+as_percent <- function(value, digits = 0, format = "f", ...) {      # Create user-defined function
+  if(typeof(value)=="double"){
+    paste0(formatC(value * 100, format = format, digits = digits, ...), "%")
+  } else {
+    stop("Input not of type double")
+  }
 }

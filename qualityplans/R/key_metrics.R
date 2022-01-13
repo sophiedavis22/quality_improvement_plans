@@ -105,27 +105,6 @@ trim_metric_table <- function(metric_list) {
 
 
 
-## need to lapply trimming and getting
-
-#paste0("N/A_", as.character(names(all_metric_list)))
-
-#red_0 <- trim_metric_table(all_metric_list)
-#red_1 <- trim_metric_table(all_metric_list[[3]])
-
-
-
-#red_2 <- get_merged_metric_table(all_metric_list[[3]])
-#red_3 <- get_merged_metric_table(all_metric_list[[3]])
-#red_2
-
-#red_4 <- red_2[,!duplicated(red_2[c(1,4,7,10)])]
-#red_5 <- red_2[, !duplicated(colnames(red_2))]
-
-#red_7 <- merge_metric_table(all_metric_list[[3]])
-#red_8 <- get_all_merged_metric_tables(all_metric_list)
-
-#red_9 <- red_8[[1]]
-
 merge_metric_table <- function(metric_list) {
   metric_reduced <- trim_metric_table(metric_list)
   merged_metrics_table <- data.frame(metric_reduced)

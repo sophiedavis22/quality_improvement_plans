@@ -8,33 +8,51 @@
 #' @return
 
 
-remove_na_rows <- function(table) {
-  table_out <- table[!rowSums(is.na(table[,-c(1:2)])) == 8, ]       # Apply rowSums & is.na
-  return(table_out)
+#remove_na_rows <- function(table) {
+ # table_out <- table[!rowSums(is.na(table[,-c(1:2)])) == 8, ]       # Apply rowSums & is.na
+  #return(table_out)
+#}
+
+
+
+
+
+
+#' @title Extract all metric tables from file
+#'
+#' @description Function to extract metric tables from divisional file
+#'
+#' @param file_path File path for single division
+#' @param config_file .yaml file containing config, with default settings (data directory, null values, metric ranges etc)
+#'
+#' @return List of 4 tables, one for each metric
+
+extract_metrics_from_tabs <- function(file_path, config_file="D:/Repos/quality_improvement_plans/config.yaml") {
+  config <- read_config(config_file)
+  tab_list <- readxl::excel_sheets(path = file_path)
+  risk_tabs <- tab_list %in% "Key Metrics"
+
+  if (!any(risk_tabs)==FALSE) {
+    lapply(config$metric_range , function(x){
+      metric_list <- t(readxl::read_xlsx(file_path, sheet = "Key Metrics", range = x, col_names=FALSE, na=config$null_values))
+      rownames(metric_list) <- NULL
+      metric_list <- as.data.frame(metric_list)
+      return(metric_list)
+    })
+  } else {
+    stop(paste(file_path, "has missing Key metrics tab"))
+  }
+
 }
 
 
 
+### UNIT TESTS completed to this line (just started below one)
+########################################################################################################
+
+#=============================================================================
 
 
-
-
-#' @title
-#'
-#' @description
-#'
-#' @param
-#' @param
-#'
-#' @return
-
-extract_metric_tables <- function(file_path) {
-  config_file <- read_config()
-  lapply(config_file$metric_range , function(x){
-    metric_list <- t(readxl::read_xlsx(file_path, sheet = "Key Metrics", range = x, col_names=FALSE, na=config_file$null_values))
-    return(metric_list)
-  })
-}
 
 #metric_list$division <- get_division_name(x)
 #file_path_list[[1]]
@@ -46,17 +64,21 @@ extract_metric_tables <- function(file_path) {
 #'
 #' @description
 #'
-#' @param
-#' @param
+#' @param file_paths Character vector of file paths
+#' @param config_file .yaml file containing config, with default settings (data directory, null values, metric ranges etc)
 #'
 #' @return
 
-extract_metric_tables_all <- function(file_path){
-  lapply(file_path, function(x){
-    all_metric_list <- extract_metric_tables(x)
+extract_all_metrics_unnamed <- function(file_paths, config_file="D:/Repos/quality_improvement_plans/config.yaml"){
+  config <- read_config(config_file)
+  lapply(file_paths, function(x){
+    all_metric_list <- extract_metrics_from_tabs(x)
     return(all_metric_list)
   })
 }
+
+
+
 
 
 
@@ -69,15 +91,17 @@ extract_metric_tables_all <- function(file_path){
 #'
 #' @return
 
-get_metric_tables_all <- function(file_path, division_names) {
-  all_metric_list <- extract_metric_tables_all(file_path)
-  all_metric_list_named <- assign_division_names(all_metric_list, division_names)
+get_metric_tables_all <- function(file_paths, division_names) {
+  all_metric_list <- extract_all_metrics_unnamed(file_paths)
+  all_metric_list_named <- assign_list_names(all_metric_list, division_names)
+  #rownames(all_metric_list_named) <- NULL
+
   return(all_metric_list_named)
 }
 
 
 
-
+# ###############################################################
 
 
 
@@ -104,6 +128,14 @@ trim_metric_table <- function(metric_list) {
 }
 
 
+#' @title
+#'
+#' @description
+#'
+#' @param
+#' @param
+#'
+#' @return
 
 merge_metric_table <- function(metric_list) {
   metric_reduced <- trim_metric_table(metric_list)
@@ -125,6 +157,14 @@ merge_metric_table <- function(metric_list) {
 
 
 
+#' @title
+#'
+#' @description
+#'
+#' @param
+#' @param
+#'
+#' @return
 
 
 get_all_merged_metric_tables <- function(all_metric_list) {
@@ -137,6 +177,14 @@ get_all_merged_metric_tables <- function(all_metric_list) {
 }
 
 
+#' @title
+#'
+#' @description
+#'
+#' @param
+#' @param
+#'
+#' @return
 
 
 combine_metrics_single_table <- function(all_divisions_metrics_tables) {
@@ -150,12 +198,32 @@ combine_metrics_single_table <- function(all_divisions_metrics_tables) {
 
 }
 
+
+#' @title
+#'
+#' @description
+#'
+#' @param
+#' @param
+#'
+#' @return
+
 combine_sum_metric_table <- function(all_divisions_metrics_tables) {
   stacked_metrics <- combine_metrics_single_table(all_divisions_metrics_tables)
   table_no_details <- subset(stacked_metrics, select=-c(details_m1, details_m2, details_m3, details_m4))
   summed_metric_table <- aggregate(. ~month, table_no_details[,-1], sum)
   return(summed_metric_table)
 }
+
+
+#' @title
+#'
+#' @description
+#'
+#' @param
+#' @param
+#'
+#' @return
 
 format_metric_table <- function(all_divisions_metrics_tables) {
   config_file <- read_config()

@@ -1,26 +1,6 @@
-#' @title
-#'
-#' @description
-#'
-#' @param
-#' @param
-#'
-#' @return
-
-
-#remove_na_rows <- function(table) {
- # table_out <- table[!rowSums(is.na(table[,-c(1:2)])) == 8, ]       # Apply rowSums & is.na
-  #return(table_out)
-#}
-
-
-
-
-
-
 #' @title Extract all metric tables from file
 #'
-#' @description Function to extract metric tables from divisional file
+#' @description Function to extract metric tables from divisional excel file
 #'
 #' @param file_path File path for single division
 #' @param config_file .yaml file containing config, with default settings (data directory, null values, metric ranges etc)
@@ -42,32 +22,18 @@ extract_metrics_from_tabs <- function(file_path, config_file="D:/Repos/quality_i
   } else {
     stop(paste(file_path, "has missing Key metrics tab"))
   }
-
 }
 
 
 
-### UNIT TESTS completed to this line (just started below one)
-########################################################################################################
-
-#=============================================================================
-
-
-
-#metric_list$division <- get_division_name(x)
-#file_path_list[[1]]
-#out <- extract_metric_tables(file_path_list[[1]])
-#out_1 <- out[[1]]
-#get_division_name(file_path_list[[1]])
-
-#' @title
+#' @title Extract all metric tables from files
 #'
-#' @description
+#' @description Function to extract all metric tables from all excel files, returning a list of metrics tables in a list by division
 #'
 #' @param file_paths Character vector of file paths
 #' @param config_file .yaml file containing config, with default settings (data directory, null values, metric ranges etc)
 #'
-#' @return
+#' @return List with sub-lists
 
 extract_all_metrics_unnamed <- function(file_paths, config_file="D:/Repos/quality_improvement_plans/config.yaml"){
   config <- read_config(config_file)
@@ -79,54 +45,100 @@ extract_all_metrics_unnamed <- function(file_paths, config_file="D:/Repos/qualit
 
 
 
-
-
-
-#' @title
+#' @title Extract all metric tables from files (with named list!)
 #'
-#' @description
+#' @description Function to extract all metric tables from all excel files, returning a list of metrics tables in a named list by division
 #'
-#' @param
-#' @param
+#' @param file_paths Character vector of file paths
+#' @param new_list_names New names as values
+#' @param config_file .yaml file containing config, with default settings (data directory, null values, metric ranges etc)
 #'
-#' @return
+#' @return Named list with sub-lists
 
-get_metric_tables_all <- function(file_paths, division_names) {
+get_all_metrics_list <- function(file_paths, new_list_names, config_file="D:/Repos/quality_improvement_plans/config.yaml") {
+  config <- read_config(config_file)
   all_metric_list <- extract_all_metrics_unnamed(file_paths)
-  all_metric_list_named <- assign_list_names(all_metric_list, division_names)
-  #rownames(all_metric_list_named) <- NULL
-
+  all_metric_list_named <- assign_list_names(all_metric_list, new_list_names)
   return(all_metric_list_named)
 }
 
 
-
-# ###############################################################
-
+#=============================================================================
 
 
-#' @title
+#' @title Trim all metric tables
 #'
-#' @description
+#' @description Function to remove first two columns and convert count to numeric
 #'
-#' @param
-#' @param
+#' @param metric_list List containing 4 metric tables for one division
+#' @param config_file .yaml file containing config, with default settings (data directory, null values, metric ranges etc)
 #'
-#' @return
+#' @return List of trimmed tables
 
 
-trim_metric_table <- function(metric_list) {
+trim_metric_table <- function(metric_list, config_file="D:/Repos/quality_improvement_plans/config.yaml") {
+  config <- read_config(config_file)
   lapply(metric_list, function(x){
-    trimmed_metric <- as.data.frame(x[2:15,3:5])
+    trimmed_metric <- as.data.frame(x[2:(config$metric_months$n_months+1),3:5])
     colnames(trimmed_metric) <- c("month", "count", "details")
     rownames(trimmed_metric) <- NULL
+
+    test <- tryCatch(as.numeric(trimmed_metric$count), error=function(e) e, warning=function(w) w)
+
+    if (is(test,"warning")==FALSE) {
+      trimmed_metric$count <- as.numeric(trimmed_metric$count)
+      return(trimmed_metric)
+    } else {
+      stop(paste(x[1,1],"count must be numeric"))
+    }
     #trimmed_metric$details[!is.na(trimmed_metric$count)&is.na(trimmed_metric$details)] <- paste0("N/A", as.character(names(x)))
-
-    return(trimmed_metric)
   })
-
 }
 
+
+
+#' @title Merge metrics for each division into one table
+#'
+#' @description Function to merge all 4 metrics into one table for one division
+#'
+#' @param metric_list List containing 4 metric tables for one division
+#' @param config_file .yaml file containing config, with default settings (data directory, null values, metric ranges etc)
+#'
+#' @return Table with all metrics for one division
+
+merge_metric_table <- function(metric_list, config_file="D:/Repos/quality_improvement_plans/config.yaml") {
+  config <- read_config(config_file)
+  test <- tryCatch(trim_metric_table(metric_list), error=function(e) e, warning=function(w) w)
+
+  if(is(test, "error")==FALSE) {
+    metric_reduced <- trim_metric_table(metric_list, config_file)
+    merged_metrics_table <- data.frame(metric_reduced)
+    colnames(merged_metrics_table) <- rep(c("month", "count", "details"),4)
+    id.rm <- which(duplicated(names(merged_metrics_table)) & names(merged_metrics_table) == "month")
+    merged_metrics_table <- merged_metrics_table[,-id.rm]
+    colnames(merged_metrics_table) <- c("month", paste0(c("m", "details_m"), rep(1:4,each=2)))
+    rownames(merged_metrics_table) <- NULL
+
+    years <- c(config$metric_months$years)
+    month_year <- paste(merged_metrics_table$month, years)
+    merged_metrics_table$month <- month_year
+
+    merged_metrics_table$month <- factor(month_year, levels=month_year)
+    return(merged_metrics_table)
+
+  } else {
+    metric_reduced <- trim_metric_table(metric_list)
+    return(metric_reduced)
+  }
+}
+
+
+
+
+
+
+### UNIT TESTS completed to this line (just started below one)
+########################################################################################################
 
 #' @title
 #'
@@ -137,44 +149,20 @@ trim_metric_table <- function(metric_list) {
 #'
 #' @return
 
-merge_metric_table <- function(metric_list) {
-  metric_reduced <- trim_metric_table(metric_list)
-  merged_metrics_table <- data.frame(metric_reduced)
-  colnames(merged_metrics_table) <- rep(c("month", "count", "details"),4)
-  id.rm <- which(duplicated(names(merged_metrics_table)) & names(merged_metrics_table) == "month")
-  merged_metrics_table <- merged_metrics_table[,-id.rm]
-  colnames(merged_metrics_table) <- c("month", paste0(c("m", "details_m"), rep(1:4,each=2)))
-  rownames(merged_metrics_table) <- NULL
 
-  years <- c(rep(2021,2), rep(2022,12))
-  merged_metrics_table$month <- paste(merged_metrics_table$month, years)
-  merged_metrics_table$month <- factor(merged_metrics_table$month, levels=merged_metrics_table$month)
-
-
-  return(merged_metrics_table)
-}
-
-
-
-
-#' @title
-#'
-#' @description
-#'
-#' @param
-#' @param
-#'
-#' @return
-
-
-get_all_merged_metric_tables <- function(all_metric_list) {
+get_all_merged_metric_tables <- function(all_metric_list, config_file="D:/Repos/quality_improvement_plans/config.yaml") {
+  config <- read_config(config_file)
   lapply(all_metric_list, function(x){
-    all_merged_metrics_tables <- merge_metric_table(x)
-    names <- c("m1" ,"m2", "m3", "m4")
-    all_merged_metrics_tables[,names] <- lapply(all_merged_metrics_tables[,names] , as.numeric)
+    all_merged_metrics_tables <- merge_metric_table(x, config_file)
+    #names <- c("m1" ,"m2", "m3", "m4")
+    #all_merged_metrics_tables[,names] <- lapply(all_merged_metrics_tables[,names] , as.numeric)
     return(all_merged_metrics_tables)
   })
 }
+
+
+# ###############################################################
+
 
 
 #' @title

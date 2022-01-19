@@ -36,5 +36,25 @@ metric_ranges:
   - "B24:P28"
 
 reporting_months:
-  this_month: "Test Month"
+  this_month: "November 2021"
   previous_month: NA
+
+metric_months: 
+  n_months: 14
+  years: 
+    - 2021
+    - 2021
+    - 2022
+    - 2022
+    - 2022
+    - 2022
+    - 2022
+    - 2022
+    - 2022
+    - 2022
+    - 2022
+    - 2022
+    - 2022
+    - 2022
+
+

@@ -45,3 +45,8 @@ metric_ranges:
 reporting_months:
   this_month: "November 2021"
   previous_month: NA
+
+metric_months: 
+  n_months: 14
+  years: c(rep(2021,2), rep(2022,12))
+

@@ -24,15 +24,11 @@ dimension_risk_final_table <- get_final_risk_dimension_table(qip_divisions_risks
 
 
 all_metric_list <- get_all_metrics_list(qip_file_paths, qip_division_names)
-
-trial_merge <- merge_metric_table(all_metric_list[[1]])
-trial_output <- all_divisions_metrics_tables$AH
-
-
-
 all_divisions_metrics_tables <- get_all_merged_metric_tables(all_metric_list)
+all_divisions_metrics <- combine_sum_metrics(all_divisions_metrics_tables)
 
-all_divisions_metrics <- combine_metrics_single_table(all_divisions_metrics_tables)
+
+
 metrics_table_final <- format_metric_table(all_divisions_metrics_tables)
 
 devtools::load("qualityplans")

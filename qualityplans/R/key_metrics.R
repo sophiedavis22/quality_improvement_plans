@@ -97,7 +97,7 @@ trim_metric_table <- function(metric_list, config_file="D:/Repos/quality_improve
 
 
 
-#' @title Merge metrics for each division into one table
+#' @title Merge metrics for one division into one table
 #'
 #' @description Function to merge all 4 metrics into one table for one division
 #'
@@ -134,20 +134,14 @@ merge_metric_table <- function(metric_list, config_file="D:/Repos/quality_improv
 
 
 
-
-
-
-### UNIT TESTS completed to this line (just started below one)
-########################################################################################################
-
-#' @title
+#' @title Merge metrics for each division into one table
 #'
-#' @description
+#' @description Function to merge all 4 metrics into one table for all divisions in list
 #'
-#' @param
-#' @param
+#' @param all_metric_list List by division containing 4 metric tables for each division
+#' @param config_file .yaml file containing config, with default settings (data directory, null values, metric ranges etc)
 #'
-#' @return
+#' @return List containing one table for each division
 
 
 get_all_merged_metric_tables <- function(all_metric_list, config_file="D:/Repos/quality_improvement_plans/config.yaml") {
@@ -165,39 +159,43 @@ get_all_merged_metric_tables <- function(all_metric_list, config_file="D:/Repos/
 
 
 
-#' @title
+
+#' @title Combine all data from metrics into single table
 #'
-#' @description
+#' @description Function to pull together detailed data from all divisions into single tidy data frame
 #'
-#' @param
-#' @param
+#' @param division_metric_list List by division with sub-lists for each metric
 #'
-#' @return
+#' @return Tidy data frame with all data for all divisions
 
 
-combine_metrics_single_table <- function(all_divisions_metrics_tables) {
-  stacked_metrics <- do.call(rbind, all_divisions_metrics_tables)
+combine_metrics <- function(division_metric_list) {
+  stacked_metrics <- do.call(rbind, division_metric_list)
   stacked_metrics$listname <- lapply(strsplit(row.names(stacked_metrics), "\\."), '[[', 1)
   stacked_metrics <- stacked_metrics[,c(ncol(stacked_metrics),1:(ncol(stacked_metrics)-1))]
   stacked_metrics <- stacked_metrics[rowSums(is.na(stacked_metrics[,-c(1,2)]))!=(ncol(stacked_metrics)-2),]
   colnames(stacked_metrics)[1] <- "division"
   rownames(stacked_metrics) <- NULL
+  stacked_metrics$division <- as.character(stacked_metrics$division)
   return(stacked_metrics)
 
 }
 
 
-#' @title
-#'
-#' @description
-#'
-#' @param
-#' @param
-#'
-#' @return
 
-combine_sum_metric_table <- function(all_divisions_metrics_tables) {
-  stacked_metrics <- combine_metrics_single_table(all_divisions_metrics_tables)
+### UNIT TESTS completed to this line (started one below)
+########################################################################################################
+
+#' @title Combine all numeric data from metrics into single table
+#'
+#' @description Function to pull together reported figures from all divisions into single table
+#'
+#' @param division_metric_list List by division with sub-lists for each metric
+#'
+#' @return Table with returns for each metric for each month
+
+combine_sum_metrics <- function(division_metric_list) {
+  stacked_metrics <- combine_metrics(division_metric_list)
   table_no_details <- subset(stacked_metrics, select=-c(details_m1, details_m2, details_m3, details_m4))
   summed_metric_table <- aggregate(. ~month, table_no_details[,-1], sum)
   return(summed_metric_table)
@@ -216,7 +214,7 @@ combine_sum_metric_table <- function(all_divisions_metrics_tables) {
 format_metric_table <- function(all_divisions_metrics_tables) {
   config_file <- read_config()
 
-  summed_metric_table <- combine_sum_metric_table(all_divisions_metrics_tables)
+  summed_metric_table <- combine_sum_metrics(all_divisions_metrics_tables)
   metric_names <- c("", "m1" ,"m2", "m3", "m4")
   previous_month <- config_file$reporting_months$previous_month
   this_month <- config_file$reporting_months$this_month

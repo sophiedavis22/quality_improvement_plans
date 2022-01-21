@@ -15,7 +15,7 @@ qip_division_names
 
 qip_divisions_risks_list <- get_all_risks_list(qip_file_paths, qip_division_names)
 qip_divisions_risks_merged <- get_risk_dimension_tables(qip_divisions_risks_list, qip_division_names)
-dimension_risk_final_table <- get_final_risk_dimension_table(qip_divisions_risks_merged)
+final_table_qip_dimension_risk <- get_final_risk_dimension_table(qip_divisions_risks_merged)
 
 
 
@@ -23,13 +23,13 @@ dimension_risk_final_table <- get_final_risk_dimension_table(qip_divisions_risks
 
 
 
-all_metric_list <- get_all_metrics_list(qip_file_paths, qip_division_names)
-all_divisions_metrics_tables <- get_all_merged_metric_tables(all_metric_list)
-all_divisions_metrics <- combine_sum_metrics(all_divisions_metrics_tables)
+qip_metrics_list <- get_all_metrics_list(qip_file_paths, qip_division_names)
+qip_metric_tables <- get_all_merged_metric_tables(qip_metrics_list)
+
+qip_metrics_data_frame <- combine_metrics(qip_metric_tables)
 
 
-
-metrics_table_final <- format_metric_table(all_divisions_metrics_tables)
+final_table_qip_metrics <- recent_metric_table(qip_metric_tables)
 
 devtools::load("qualityplans")
 getwd()

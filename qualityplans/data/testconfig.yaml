@@ -36,8 +36,8 @@ metric_ranges:
   - "B24:P28"
 
 reporting_months:
-  this_month: "November 2021"
-  previous_month: NA
+  latest_month: "December 2021"
+  previous_month: "November 2021"
 
 metric_months: 
   n_months: 14

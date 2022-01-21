@@ -91,7 +91,6 @@ trim_metric_table <- function(metric_list, config_file="D:/Repos/quality_improve
     } else {
       stop(paste(x[1,1],"count must be numeric"))
     }
-    #trimmed_metric$details[!is.na(trimmed_metric$count)&is.na(trimmed_metric$details)] <- paste0("N/A", as.character(names(x)))
   })
 }
 
@@ -182,10 +181,6 @@ combine_metrics <- function(division_metric_list) {
 }
 
 
-
-### UNIT TESTS completed to this line (started one below)
-########################################################################################################
-
 #' @title Combine all numeric data from metrics into single table
 #'
 #' @description Function to pull together reported figures from all divisions into single table
@@ -194,46 +189,57 @@ combine_metrics <- function(division_metric_list) {
 #'
 #' @return Table with returns for each metric for each month
 
-combine_sum_metrics <- function(division_metric_list) {
-  stacked_metrics <- combine_metrics(division_metric_list)
-  table_no_details <- subset(stacked_metrics, select=-c(details_m1, details_m2, details_m3, details_m4))
-  summed_metric_table <- aggregate(. ~month, table_no_details[,-1], sum)
-  return(summed_metric_table)
+aggregate_metrics <- function(division_metric_list) {
+  stacked_data <- combine_metrics(division_metric_list)
+  table_no_details <- subset(stacked_data, select=-c(details_m1, details_m2, details_m3, details_m4))
+  if (any(is.na(table_no_details[,-1]))) {
+    na_rows <- table_no_details[!complete.cases(table_no_details), 1]
+    stop("Divisions (", paste0(na_rows, ", "), ") have unexpected NA values")
+
+
+  } else {
+    sum_metric_table <- aggregate(. ~month, table_no_details[,-1], sum)
+    return(sum_metric_table)
+  }
+
 }
 
 
-#' @title
-#'
-#' @description
-#'
-#' @param
-#' @param
-#'
-#' @return
+### UNIT TESTS completed to this line
+########################################################################################################
 
-format_metric_table <- function(all_divisions_metrics_tables) {
-  config_file <- read_config()
 
-  summed_metric_table <- combine_sum_metrics(all_divisions_metrics_tables)
-  metric_names <- c("", "m1" ,"m2", "m3", "m4")
-  previous_month <- config_file$reporting_months$previous_month
-  this_month <- config_file$reporting_months$this_month
+#' @title Get table with latest 2 months of data
+#'
+#' @description Function to condense metric data from all divisions to figures only for latest 2 months
+#'
+#' @param all_metric_list List by division containing 4 metric tables for each division
+#' @param config_file .yaml file containing config, with default settings (data directory, null values, metric ranges etc)
+#'
+#' @return Single table with latest 2 months of data
 
-  this_month_v <- summed_metric_table[summed_metric_table$month==this_month,]
+recent_metric_table <- function(all_metric_list, config_file="D:/Repos/quality_improvement_plans/config.yaml") {
+  config <- read_config(config_file)
+
+  summed_metric_table <- aggregate_metrics(all_metric_list)
+  metric_names <- c("", "M1" ,"M2", "M3", "M4")
+  previous_month <- config$reporting_months$previous_month
+  latest_month <- config$reporting_months$latest_month
+
+  latest_month_v <- summed_metric_table[summed_metric_table$month==latest_month,]
   previous_month_v <- summed_metric_table[summed_metric_table$month==previous_month,]
 
-  output_table <- data.frame(q_id=metric_names, this_month=t(this_month_v), previous_month=t(previous_month_v))
+  output_table <- data.frame(q_id=metric_names, previous_month=t(previous_month_v), latest_month=t(latest_month_v))
 
   colnames(output_table) <- c("Question",
-                     #paste0("Previous month (",previous_month, ")"),
-                     paste0("Latest month (", this_month, ")"))
+                              paste0("Previous month (",previous_month, ")"),
+                              paste0("Latest month (", latest_month, ")"))
   output_table <- output_table[-1,]
   rownames(output_table) <-NULL
 
+  output_table[,-1] <- as.numeric(unlist(output_table[,-1]))
   return(output_table)
-
 }
-
 
 
 

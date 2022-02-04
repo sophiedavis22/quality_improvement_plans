@@ -4,12 +4,18 @@
 \alias{extract_risks_from_tabs}
 \title{Extract Quality Risks for single division}
 \usage{
-extract_risks_from_tabs(file_path, risk_tabs)
+extract_risks_from_tabs(
+  file_path,
+  risk_tabs,
+  config_file = "D:/Repos/quality_improvement_plans/config.yaml"
+)
 }
 \arguments{
 \item{file_path}{File path for single division}
 
 \item{risk_tabs}{Tab names for division}
+
+\item{config_file}{.yaml file containing config, with default settings (data directory, null values, metric ranges etc)}
 }
 \value{
 List of tables (output table for each risk)

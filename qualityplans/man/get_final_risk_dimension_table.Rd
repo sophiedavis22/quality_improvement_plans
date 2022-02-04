@@ -2,12 +2,12 @@
 % Please edit documentation in R/quality_risks.R
 \name{get_final_risk_dimension_table}
 \alias{get_final_risk_dimension_table}
-\title{Table of Quality risks by division and dimension}
+\title{Table of quality risks by division and dimension}
 \usage{
-get_final_risk_dimension_table(all_div_risks_merg)
+get_final_risk_dimension_table(merged_risks)
 }
 \arguments{
-\item{all_div_risks_merg}{List of tables for each division with merged quality risks}
+\item{merged_risks}{List of risk tables by division}
 }
 \value{
 Table

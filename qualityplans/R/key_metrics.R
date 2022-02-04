@@ -6,6 +6,8 @@
 #' @param config_file .yaml file containing config, with default settings (data directory, null values, metric ranges etc)
 #'
 #' @return List of 4 tables, one for each metric
+#'
+#' @export
 
 extract_metrics_from_tabs <- function(file_path, config_file="D:/Repos/quality_improvement_plans/config.yaml") {
   config <- read_config(config_file)
@@ -34,6 +36,8 @@ extract_metrics_from_tabs <- function(file_path, config_file="D:/Repos/quality_i
 #' @param config_file .yaml file containing config, with default settings (data directory, null values, metric ranges etc)
 #'
 #' @return List with sub-lists
+#'
+#' @export
 
 extract_all_metrics_unnamed <- function(file_paths, config_file="D:/Repos/quality_improvement_plans/config.yaml"){
   config <- read_config(config_file)
@@ -54,6 +58,8 @@ extract_all_metrics_unnamed <- function(file_paths, config_file="D:/Repos/qualit
 #' @param config_file .yaml file containing config, with default settings (data directory, null values, metric ranges etc)
 #'
 #' @return Named list with sub-lists
+#'
+#' @export
 
 get_all_metrics_list <- function(file_paths, new_list_names, config_file="D:/Repos/quality_improvement_plans/config.yaml") {
   config <- read_config(config_file)
@@ -74,6 +80,8 @@ get_all_metrics_list <- function(file_paths, new_list_names, config_file="D:/Rep
 #' @param config_file .yaml file containing config, with default settings (data directory, null values, metric ranges etc)
 #'
 #' @return List of trimmed tables
+#'
+#' @export
 
 
 trim_metric_table <- function(metric_list, config_file="D:/Repos/quality_improvement_plans/config.yaml") {
@@ -104,6 +112,8 @@ trim_metric_table <- function(metric_list, config_file="D:/Repos/quality_improve
 #' @param config_file .yaml file containing config, with default settings (data directory, null values, metric ranges etc)
 #'
 #' @return Table with all metrics for one division
+#'
+#' @export
 
 merge_metric_table <- function(metric_list, config_file="D:/Repos/quality_improvement_plans/config.yaml") {
   config <- read_config(config_file)
@@ -141,6 +151,8 @@ merge_metric_table <- function(metric_list, config_file="D:/Repos/quality_improv
 #' @param config_file .yaml file containing config, with default settings (data directory, null values, metric ranges etc)
 #'
 #' @return List containing one table for each division
+#'
+#' @export
 
 
 get_all_merged_metric_tables <- function(all_metric_list, config_file="D:/Repos/quality_improvement_plans/config.yaml") {
@@ -166,6 +178,8 @@ get_all_merged_metric_tables <- function(all_metric_list, config_file="D:/Repos/
 #' @param division_metric_list List by division with sub-lists for each metric
 #'
 #' @return Tidy data frame with all data for all divisions
+#'
+#' @export
 
 
 combine_metrics <- function(division_metric_list) {
@@ -188,6 +202,8 @@ combine_metrics <- function(division_metric_list) {
 #' @param division_metric_list List by division with sub-lists for each metric
 #'
 #' @return Table with returns for each metric for each month
+#'
+#' @export
 
 aggregate_metrics <- function(division_metric_list) {
   stacked_data <- combine_metrics(division_metric_list)
@@ -205,8 +221,7 @@ aggregate_metrics <- function(division_metric_list) {
 }
 
 
-### UNIT TESTS completed to this line
-########################################################################################################
+
 
 
 #' @title Get table with latest 2 months of data
@@ -217,6 +232,8 @@ aggregate_metrics <- function(division_metric_list) {
 #' @param config_file .yaml file containing config, with default settings (data directory, null values, metric ranges etc)
 #'
 #' @return Single table with latest 2 months of data
+#'
+#' @export
 
 recent_metric_table <- function(all_metric_list, config_file="D:/Repos/quality_improvement_plans/config.yaml") {
   config <- read_config(config_file)

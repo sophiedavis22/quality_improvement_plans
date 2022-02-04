@@ -2,12 +2,12 @@
 % Please edit documentation in R/utilities.R
 \name{read_config}
 \alias{read_config}
-\title{Reading in QIP config}
+\title{Reading in config file}
 \usage{
 read_config(config_file = "D:/Repos/quality_improvement_plans/config.yaml")
 }
 \arguments{
-\item{config_file}{Yaml file containing config, with default setting}
+\item{config_file}{.yaml file containing config, with default settings (data directory, null values, metric ranges etc)}
 }
 \value{
 List of variables

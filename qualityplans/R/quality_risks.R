@@ -7,6 +7,8 @@
 #' @param config_file .yaml file containing config, with default settings (data directory, null values, metric ranges etc)
 #'
 #' @return List of tables (output table for each risk)
+#'
+#' @export
 
 extract_risks_from_tabs <- function(file_path, risk_tabs, config_file="D:/Repos/quality_improvement_plans/config.yaml"){
   config <- read_config(config_file)
@@ -28,6 +30,8 @@ extract_risks_from_tabs <- function(file_path, risk_tabs, config_file="D:/Repos/
 #' @param config_file .yaml file containing config, with default settings (data directory, null values, metric ranges etc)
 #'
 #' @return List of tables (list by division, sub-lists by risk)
+#'
+#' @export
 
 extract_all_risks_unnamed <- function(file_paths, config_file="D:/Repos/quality_improvement_plans/config.yaml"){
   config <- read_config(config_file)
@@ -53,6 +57,8 @@ extract_all_risks_unnamed <- function(file_paths, config_file="D:/Repos/quality_
 #' @param config_file .yaml file containing config, with default settings (data directory, null values, metric ranges etc)
 #'
 #' @return List of tables (list by division, sub-lists of tibbles for each risk)
+#'
+#' @export
 
 get_all_risks_list <- function(file_paths, new_list_names, config_file="D:/Repos/quality_improvement_plans/config.yaml") {
   all_risk_list <- extract_all_risks_unnamed(file_paths, config_file)
@@ -69,6 +75,8 @@ get_all_risks_list <- function(file_paths, new_list_names, config_file="D:/Repos
 #' @param table Table with characters
 #'
 #' @return Table with added frequency column
+#'
+#' @export
 
 sum_full_cells <- function(table){
   table$frequency <- rowSums(!is.na(table[-1]))
@@ -85,6 +93,8 @@ sum_full_cells <- function(table){
 #' @param division_order Numeric vector from 1 to number of divisions
 #'
 #' @return Table with total column
+#'
+#' @export
 
 merge_risks <- function(risk_list, division_order){
   risk_table <- data.frame(risk_list[[division_order]])
@@ -104,6 +114,8 @@ merge_risks <- function(risk_list, division_order){
 #' @param all_risk_list List of quality risks (by division) containing sub lists of risks
 #'
 #' @return List of tables (not named)
+#'
+#' @export
 
 merge_all_risks <- function(all_risk_list){
   lapply(1:length(all_risk_list), function(x){
@@ -122,6 +134,8 @@ merge_all_risks <- function(all_risk_list){
 #' @param new_list_names New names as values
 #'
 #' @return List of tables (named)
+#'
+#' @export
 
 get_risk_dimension_tables <- function(all_risk_list, new_list_names) {
   merged_risks <- merge_all_risks(all_risk_list)
@@ -138,6 +152,8 @@ get_risk_dimension_tables <- function(all_risk_list, new_list_names) {
 #' @param table Table with character row names and numeric entries
 #'
 #' @return Table with added "total" column
+#'
+#' @export
 
 sum_num <- function(table){
   table$total <- rowSums(table, na.rm=TRUE)
@@ -153,6 +169,8 @@ sum_num <- function(table){
 #' @param merged_risks List of risk tables by division
 #'
 #' @return Table of risks by division and division with added "total" column
+#'
+#' @export
 
 create_dim_table <- function(merged_risks){
   dim_table <- data.frame(merged_risks)
@@ -176,6 +194,8 @@ create_dim_table <- function(merged_risks){
 #' @param merged_risks List of risk tables by division
 #'
 #' @return List with number of risks for each division
+#'
+#' @export
 
 count_risks <- function(merged_risks){
   lapply(merged_risks, function(x){
@@ -194,6 +214,8 @@ count_risks <- function(merged_risks){
 #' @param merged_risks List of risk tables by division
 #'
 #' @return Table of totals by division
+#'
+#' @export
 
 create_risk_table <- function(dim_table){
   risk_count_list <- count_risks(dim_table)
@@ -213,6 +235,8 @@ create_risk_table <- function(dim_table){
 #' @param merged_risks List of risk tables by division
 #'
 #' @return Table
+#'
+#' @export
 
 get_final_risk_dimension_table <- function(merged_risks){
   table_by_dimension <- create_dim_table(merged_risks)

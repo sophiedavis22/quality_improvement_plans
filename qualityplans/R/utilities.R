@@ -5,6 +5,8 @@
 #' @param config_file .yaml file containing config, with default settings (data directory, null values, metric ranges etc)
 #'
 #' @return List of variables
+#'
+#' @export
 
 read_config <- function(config_file="D:/Repos/quality_improvement_plans/config.yaml") {
   config <- yaml::read_yaml(config_file)
@@ -20,6 +22,8 @@ read_config <- function(config_file="D:/Repos/quality_improvement_plans/config.y
 #' @param config_file .yaml file containing config, with default settings (data directory, null values, metric ranges etc)
 #'
 #' @return All file paths as character vector (alphabetical)
+#'
+#' @export
 
 get_file_paths <- function(config_file="D:/Repos/quality_improvement_plans/config.yaml") {
   config <- read_config(config_file)
@@ -38,6 +42,8 @@ get_file_paths <- function(config_file="D:/Repos/quality_improvement_plans/confi
 #' @param config_file .yaml file containing config, with default settings (data directory, null values, metric ranges etc)
 #'
 #' @return All division names as character vector
+#'
+#' @export
 
 get_division_names <- function(file_paths, config_file="D:/Repos/quality_improvement_plans/config.yaml") {
   config <- read_config(config_file)
@@ -59,6 +65,8 @@ get_division_names <- function(file_paths, config_file="D:/Repos/quality_improve
 #' @param config_file .yaml file containing config, with default settings (data directory, null values, metir ranges and reporting months)
 #'
 #' @return Division name as character
+#'
+#' @export
 
 #get_division_name <- function(file_path, config_file="D:/Repos/quality_improvement_plans/config.yaml") {
 #  config_file <- read_config()
@@ -79,6 +87,8 @@ get_division_names <- function(file_paths, config_file="D:/Repos/quality_improve
 #' @param new_names Names as character vector of same length as list
 #'
 #' @return List named elements
+#'
+#' @export
 
 assign_list_names <- function(list, new_names){
   if(length(list)==length(new_names)) {
@@ -96,8 +106,12 @@ assign_list_names <- function(list, new_names){
 #' @description Function to convert input value to percentage format
 #'
 #' @param value Numeric variable
+#' @param digits Number of decimal places
+#' @param format format
 #'
 #' @return Percentage as character
+#'
+#' @export
 
 as_percent <- function(value, digits = 0, format = "f", ...) {      # Create user-defined function
   if(typeof(value)=="double"){

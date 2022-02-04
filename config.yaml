@@ -1,0 +1,67 @@
+directory: "//NDATA9/daviss1$/My Documents/QIP work/December QIPs"
+
+file_prefix: "/UPDATED_Quality_Improvement_Plan_"
+
+null_values:
+  - NA
+  - "-"
+  - "- "
+  - "NA"
+  - "NA "
+  - "N/A"
+  - "N/A "
+  - "na"
+  - "na "
+  - "n/a"
+  - "n/a "
+  - "N/a"
+  - "N/a "
+  - "none"
+  - "None"
+  - "NONE"
+  - "none "
+  - "None "
+  - "NONE "
+  - " "
+
+dimension_range: "B5:C10"
+
+non_risk_tab_names:
+  - "Contents"
+  - "Foreword by Sarah Henry"
+  - "Background"
+  - "Instructions"
+  - "Key Metrics"
+  - "BLANK Quality Risk"
+  - "Progress Check"
+  - "EXAMPLE Quality Risk"
+  - "Non-published outputs"
+
+metric_ranges:
+  - "B4:P8"
+  - "B10:P14"
+  - "B17:P21"
+  - "B24:P28"
+
+reporting_months:
+  latest_month: "December 2021"
+  previous_month: "November 2021"
+
+metric_months:
+  n_months: 14
+  years:
+    - 2021
+    - 2021
+    - 2022
+    - 2022
+    - 2022
+    - 2022
+    - 2022
+    - 2022
+    - 2022
+    - 2022
+    - 2022
+    - 2022
+    - 2022
+    - 2022
+

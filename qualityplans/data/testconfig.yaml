@@ -1,0 +1,60 @@
+directory: "data"
+
+file_prefix: "/test_"
+
+null_values:
+  - "test"
+  - NA
+  - "-"
+  - "- "
+  - "NA"
+  - "NA "
+  - "N/A"
+  - "N/A "
+  - "na"
+  - "na "
+  - "n/a"
+  - "n/a "
+  - "N/a"
+  - "N/a "
+  - "none"
+  - "None"
+  - "NONE"
+  - "none "
+  - "None "
+  - "NONE "
+
+dimension_range: "B5:C10"
+
+non_risk_tab_names: 
+  - "Not Quality Risk"
+
+metric_ranges:
+  - "B4:P8"
+  - "B10:P14"
+  - "B17:P21"
+  - "B24:P28"
+
+reporting_months:
+  latest_month: "December 2021"
+  previous_month: "November 2021"
+
+metric_months: 
+  n_months: 14
+  years: 
+    - 2021
+    - 2021
+    - 2022
+    - 2022
+    - 2022
+    - 2022
+    - 2022
+    - 2022
+    - 2022
+    - 2022
+    - 2022
+    - 2022
+    - 2022
+    - 2022
+
+

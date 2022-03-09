@@ -208,15 +208,14 @@ combine_metrics <- function(division_metric_list) {
 aggregate_metrics <- function(division_metric_list) {
   stacked_data <- combine_metrics(division_metric_list)
   table_no_details <- subset(stacked_data, select=-c(details_m1, details_m2, details_m3, details_m4))
-  if (any(is.na(table_no_details[,-1]))) {
-    na_rows <- table_no_details[!complete.cases(table_no_details), 1]
-    stop("Divisions (", paste0(na_rows, ", "), ") have unexpected NA values")
+  #if (any(is.na(table_no_details[,-1]))) {
+    #na_rows <- table_no_details[!complete.cases(table_no_details), 1]
+    #stop("Divisions (", paste0(na_rows, ", "), ") have unexpected NA values")
 
-
-  } else {
+  #} else {
     sum_metric_table <- aggregate(. ~month, table_no_details[,-1], sum)
     return(sum_metric_table)
-  }
+  #}
 
 }
 

@@ -1,6 +1,5 @@
 devtools::install("qualityplans")
 
-
 #source("R/utilities.R")
 #source("R/quality_risks.R")
 #source("R/key_metrics.R")

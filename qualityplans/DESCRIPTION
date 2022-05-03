@@ -1,9 +1,9 @@
 Package: qualityplans
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Quality Improvement Plans concatenation
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
+Author: Sophie Davis
+Maintainer: Sophie Davis <sophie.davis@ons.gov.uk>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 License: MIT + file LICENSE

@@ -1,6 +1,6 @@
-directory: "//NDATA9/daviss1$/My Documents/QIP work/December QIPs"
+directory: "//NDATA9/daviss1$/My Documents/QIP work/Completed QIPs - January Update"
 
-file_prefix: "/UPDATED_Quality_Improvement_Plan_"
+file_prefix: "/QIP_jan_"
 
 null_values:
   - NA
@@ -23,6 +23,7 @@ null_values:
   - "None "
   - "NONE "
   - " "
+  - "?"
 
 dimension_range: "B5:C10"
 
@@ -36,6 +37,8 @@ non_risk_tab_names:
   - "Progress Check"
   - "EXAMPLE Quality Risk"
   - "Non-published outputs"
+  - "DRAFT Risk A"
+  - "DRAFT Risk B"
 
 metric_ranges:
   - "B4:P8"
@@ -44,8 +47,8 @@ metric_ranges:
   - "B24:P28"
 
 reporting_months:
-  latest_month: "December 2021"
-  previous_month: "November 2021"
+  latest_month: "January 2022"
+  previous_month: "December 2021"
 
 metric_months:
   n_months: 14

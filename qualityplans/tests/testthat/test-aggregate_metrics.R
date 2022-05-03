@@ -64,4 +64,3 @@ testthat::test_that("Check data input is as expected", {
 })
 
 
-
